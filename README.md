@@ -45,4 +45,4 @@ rosstart # run another terminal on this container
 - [Hardware Acceleration](http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration)
 - [nvidia/cudagl](https://hub.docker.com/r/nvidia/cudagl/tags?page=1&name=16.04) Docker image
 
-Modified based on https://github.com/andrei-ng/docker-xenial-with-terminator-zsh
+Modified based on https://github.com/sunsided/ros-gazebo-gpu-docker
