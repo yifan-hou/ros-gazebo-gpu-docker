@@ -4,8 +4,8 @@
 set -euo pipefail
 
 # See README.md for building this image.
-CONTAINER_NAME=ros
-DOCKER_IMAGE=sunside/ros-gazebo-gpu:kinetic-nvidia
+CONTAINER_NAME=mlab_ros
+DOCKER_IMAGE=yifan/ros-gpu:melodic-nvidia
 
 # Which GPUs to use; see https://github.com/NVIDIA/nvidia-docker
 GPUS="all"
