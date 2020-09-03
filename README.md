@@ -1,64 +1,48 @@
-# ROS Kinetic Desktop Full + NVIDIA in Docker
+# ROS Melodic + NVIDIA + ROS Control in Docker
 
-**TL;DR:** On Linux, to drop into an X11 enabled container created from [sunside/ros-gazebo-gpu:kinetic-nvidia](https://hub.docker.com/repository/docker/sunside/ros-gazebo-gpu),
-run
-
+## How to build the image
 ```bash
-./run-nvidia.sh
+cd docker/nvidia
+./build.sh
 ```
+You can find the docker file and config files under `docker/nvidia`.
 
 You'll be user `ros` with password `ros` and `sudo` powers. The current directory will be mounted to `/workspace` in the container.
 
----
-
-I am aware that ROS Kinetic is somewhat outdated.
-However, for some projects I did I had the constraint to
-work with Kinetic and Gazebo 7 rather than any newer
-version. Since I was using Ubuntu 20.04 at the time
-(and ROS Noetic wasn't even released), I created this
-repo to help me and possibly others out. It is, after
-all, just a digest of information that can also
-be found all around the web.
-
-## Sourced documentation
-
-- [Ubuntu install of ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu)
-- [Hardware Acceleration](http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration)
-- [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker)
-- [Install Gazebo using Ubuntu Packages](http://gazebosim.org/tutorials?cat=install&tut=install_ubuntu&ver=7.0)
-- [Gazebo Models](https://github.com/osrf/gazebo_models) are available
- on Git
-- [nvidia/cudagl](https://hub.docker.com/r/nvidia/cudagl/tags?page=1&name=16.04) Docker image
-
-## Problems to steer around
-
-A core issues that arise when just following the official documentation(s) are these:
-
-- The `nvidia-docker2` runtime is now deprecated and has been replaced with `nvidia-container-toolkit`; as a result,
-`--runtime="nvidia"` is not a valid option anymore
-and `--gpus "all"` (or similar) must be used instead.
-- The visualization tools (such as Gazebo and RViz) require OpenGL to work, which isn't available in the offical ROS Docker images (see [here](https://answers.ros.org/question/322029/nvidia-driver-problem-in-ubuntu-1804-host-with-a-ros-kinetic-desktop-full-docker/) and [here](https://stackoverflow.com/questions/44166269/libgl-error-failed-to-load-driver-swrast-in-docker-container)).
-- Gazebo 7.0 is provided with the official ROS Docker image, but is outdated (see [here](https://answers.gazebosim.org/question/6347/downloading-models-fails/) and [here](https://answers.gazebosim.org/question/18014/gazebo-7-ambulance-model-and-other-invalid-mesh-filename-extension-crash/)). The Docker image comes with Gazebo 7.x from Gazebosim's package sources.
-- X11 authentication may fail due to a subtle bug when passing arguments along.
-
-## Build with GPU support
-
-For NVIDIA GPU support, go to the [docker/nvidia](docker/nvidia)
-directory and follow the instructions [there](docker/nvidia/README.md).
-
-If in a hurry, just run
-
-```bash
-docker/nvidia/build.sh
+## How to run the container
 ```
-
-This should provide you with the image [`sunside/ros-gazebo-gpu:kinetic-nvidia`](https://hub.docker.com/repository/docker/sunside/ros-gazebo-gpu).
-
-Start the container with
-
-```bash
 ./run-nvidia.sh
 ```
 
-and you're ready to go. Note that this will create a container named `ros`, so running the command twice won't work. You can,
-however, `docker exec -it ros bash` into the running container as often as you like.
+## A script to make your life easier
+`scripts/docker_run.sh` is a script for create/start/attach to the same container from multiple terminals. Use it to quickly get in your container without worrying about duplicating your container.
+
+The behavior of the script is as follows. If the container is:
+* **Running**, then connect to it in a new terminal.
+* **Stopped**, then start it and connect to it.
+* **Not yet created**, then create it (you must have already built the image).
+
+Suggested use of the script:
+``` bash
+# in your host machine
+cp docker_run.sh ~/bin # copy it to ~/bin
+echo "export PATH="~/bin:$PATH"" >> ~/.bashrc # add ~/bin to your path
+source ~/.bashrc
+cd ~/bin
+mv docker_run.sh rosstart # give it a convenient name, remove the '.sh' postfix
+chmod -x rosstart # give it executable access
+
+# from anywhere
+rosstart # run the container
+# from another terminal
+rosstart # run another terminal on this container
+```
+
+
+---
+## Sourced documentation
+- [Ubuntu install of ROS Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu)
+- [Hardware Acceleration](http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration)
+- [nvidia/cudagl](https://hub.docker.com/r/nvidia/cudagl/tags?page=1&name=16.04) Docker image
+
+Modified based on https://github.com/andrei-ng/docker-xenial-with-terminator-zsh

@@ -1,15 +1,25 @@
 ##
 ## This script creates or starts or connects to the mlab_ros container.
-## Copy this file to ~/bin and change its access by
+##
+## Copy this file to ~/bin (you may need to add ~/bin to path), change its name
+## and access,
 ##      chmod +x mlab_docker_run.sh
 ##
 ##
-set -euo pipefail
 
-# See README.md for building this image.
+# Paths. Modify them for your system.
+# See README.md for more details.
 CONTAINER_NAME=mlab_ros
-DOCKER_IMAGE=yifan/ros-gpu:melodic-nvidia
+DOCKER_IMAGE=yifan/ros-gpu:melodic-nvidia # the image name in build.sh
+GIT_PATH=~/Git # this path on the host machine will be mounted to /workspace/Git
+CATKIN_WS_PATH=~/Dockers/mlab/catkin_ws # this path on the host machine will be
+                                        # mounted to /workspace/catkin_ws
 
+##
+## The following code check if the container is create/stopped/running before
+## trying to create/start/attach to it. This avoids duplicating containers.
+##
+set -euo pipefail
 if [ "$(docker ps -q -f name="$CONTAINER_NAME")" ]; then
     # the container is already running.
     echo "The container is already running. Now connect to it."
@@ -56,7 +66,7 @@ docker run -it \
     --env="XAUTHORITY=$XAUTH_DOCKER" \
     --volume="$XSOCK:$XSOCK:rw" \
     --volume="$XAUTH:$XAUTH_DOCKER:rw" \
-    -v ~/Git:/workspace/Git \
-    -v ~/Dockers/mlab/catkin_ws:/workspace/catkin_ws \
+    -v "$GIT_PATH:/workspace/Git" \
+    -v "$CATKIN_WS_PATH:/workspace/catkin_ws" \
     $DOCKER_IMAGE \
     bash
