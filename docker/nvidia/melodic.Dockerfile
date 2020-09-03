@@ -27,19 +27,20 @@ RUN apt-get update && apt-get install -y \
     python-rosdep python-rosinstall python-rosinstall-generator \
     python-wstool build-essential
 
-# # Upgrade Gazebo 7.
-# RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-# RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
-# RUN apt-get update && apt-get install -y \
-#     gazebo7 \
-#  && rm -rf /var/lib/apt/lists/*
+# Upgrade Gazebo 7.
+RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+RUN apt-get update && apt-get install -y \
+    ros-melodic-gazebo11-ros-pkgs ros-melodic-gazebo11-ros-control \
+    && rm -rf /var/lib/apt/lists/*
+
 
 # Initialize rosdep
 RUN rosdep init
 RUN rosdep update
 
 # Install ROS-control
-RUN apt-get install -y ros-melodic-ros-control ros-melodic-ros-controllers
+# RUN apt-get install -y ros-melodic-ros-control ros-melodic-ros-controllers
 
 # clean up source lists after installation
 RUN rm -rf /var/lib/apt/lists/*
@@ -74,6 +75,9 @@ USER ros
 # Setup terminator
 RUN mkdir -p /home/ros/.config/terminator/
 COPY configs/terminator_config /home/ros/.config/terminator/config
+
+RUN sh -c "$(wget -O- https://raw.githubusercontent.com/deluan/zsh-in-docker/master/zsh-in-docker.sh)"
+
 
 ##
 ## config bash
