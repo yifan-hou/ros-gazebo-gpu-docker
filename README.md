@@ -38,6 +38,15 @@ rosstart # run the container
 rosstart # run another terminal on this container
 ```
 
+## todo
+add to dockerfile:
+``` bash
+sudo apt-get install ros-melodic-catkin python-catkin-tools
+rosdep install kdl_parser
+rosmake kdl_parser
+```
+
+
 
 ---
 ## Sourced documentation
