@@ -14,6 +14,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     ssh \
     terminator \
     gnome-terminal \
+    software-properties-common \
  && rm -rf /var/lib/apt/lists/*
 
 # Register the ROS package sources.
@@ -27,20 +28,14 @@ RUN apt-get update && apt-get install -y \
     python-rosdep python-rosinstall python-rosinstall-generator \
     python-wstool build-essential
 
-# Upgrade Gazebo 7.
+# Install Gazebo and ROS control
 RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
 RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
 RUN apt-get update && apt-get install -y \
     ros-melodic-gazebo11-ros-pkgs ros-melodic-gazebo11-ros-control \
-    && rm -rf /var/lib/apt/lists/*
+    ros-melodic-ros-control ros-melodic-ros-controllers
 
-
-# Initialize rosdep
-RUN rosdep init
-RUN rosdep update
-
-# Install ROS-control
-# RUN apt-get install -y ros-melodic-ros-control ros-melodic-ros-controllers
+RUN apt-get install ros-melodic-catkin python-catkin-tools
 
 # clean up source lists after installation
 RUN rm -rf /var/lib/apt/lists/*
@@ -71,6 +66,12 @@ RUN addgroup --gid $ROS_GROUP_ID ros \
  && chown -R ros:ros /home/ros /workspace
 
 USER ros
+
+# Initialize rosdep
+RUN sudo rosdep init
+RUN rosdep update
+RUN rosdep install kdl_parser
+RUN rosmake kdl_parser
 
 # Setup terminator
 RUN mkdir -p /home/ros/.config/terminator/
