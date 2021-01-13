@@ -1,39 +1,44 @@
 ##
 ## This script creates or starts or connects to the mlab_ros container.
-##
-## Copy this file to ~/bin (you may need to add ~/bin to path), change its name
-## and access,
+## Copy this file to ~/bin and change its access by
 ##      chmod +x mlab_docker_run.sh
 ##
 ##
 
-# Paths. Modify them for your system.
-# See README.md for more details.
+# See README.md for building this image.
 CONTAINER_NAME=mlab_ros
-DOCKER_IMAGE=yifan/ros-gpu:melodic-nvidia # the image name in build.sh
-GIT_PATH=~/Git # this path on the host machine will be mounted to /workspace/Git
-CATKIN_WS_PATH=~/Dockers/mlab/catkin_ws # this path on the host machine will be
-                                        # mounted to /workspace/catkin_ws
+DOCKER_IMAGE=yifan/ros-gpu:melodic-nvidia
+GIT_PATH=~/Git
+CATKIN_WS_PATH=~/Dockers/mlab/catkin_ws
 
-##
-## The following code check if the container is create/stopped/running before
-## trying to create/start/attach to it. This avoids duplicating containers.
-##
 set -euo pipefail
 if [ "$(docker ps -q -f name="$CONTAINER_NAME")" ]; then
     # the container is already running.
     echo "The container is already running. Now connect to it."
     docker exec -it "$CONTAINER_NAME" bash
     exit
-else
-    # the container is not running
-    if [ "$(docker ps -aq -f status=exited -f name="$CONTAINER_NAME")" ]; then
-        # the container exists. start and connect to it
-        echo "The container exists. Now start and connect to it."
-        docker start "$CONTAINER_NAME"
-        docker exec -it "$CONTAINER_NAME" bash
-        exit
-    fi
+fi
+
+if [ "$(docker ps -aq -f status=exited -f name="$CONTAINER_NAME")" ]; then
+    # the container exists but is stopped. start and connect to it
+    echo "The container exists but is stopped. Now start and connect to it."
+    docker start "$CONTAINER_NAME"
+    docker exec -it "$CONTAINER_NAME" bash
+    exit
+fi
+
+if [ "$(docker ps -aq -f status=created -f name="$CONTAINER_NAME")" ]; then
+    # the container is just created. start and connect to it
+    echo "The container is just created. Now start and connect to it."
+    docker start "$CONTAINER_NAME"
+    docker exec -it "$CONTAINER_NAME" bash
+    exit
+fi
+
+if [ "$(docker ps -aq -f name="$CONTAINER_NAME")" ]; then
+    # the container exists but is in an unknown status
+    echo "The container exists but is in an unknown status. Please update how to handle this status in this script."
+    exit
 fi
 
 echo "The container does not exist. Creating it:"
