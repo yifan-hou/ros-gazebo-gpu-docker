@@ -10,6 +10,7 @@ CONTAINER_NAME=mlab_ros
 DOCKER_IMAGE=yifan/ros-gpu:melodic-nvidia
 GIT_PATH=~/Git
 CATKIN_WS_PATH=~/Dockers/mlab/catkin_ws
+PKG_PATH=~/Dockers/mlab/ros-gazebo-gpu-docker
 
 set -euo pipefail
 if [ "$(docker ps -q -f name="$CONTAINER_NAME")" ]; then
@@ -48,7 +49,7 @@ GPUS="all"
 
 XSOCK=/tmp/.X11-unix
 
-XAUTH=`pwd`/.tmp/docker.xauth
+XAUTH=$PKG_PATH/.tmp/docker.xauth
 XAUTH_DOCKER=/tmp/.docker.xauth
 
 if [ ! -f $XAUTH ]

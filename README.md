@@ -23,6 +23,10 @@ The behavior of the script is as follows. If the container is:
 * **Not yet created**, then create it (you must have already built the image).
 
 Suggested use of the script:
+**1. Edit paths.**
+Open docker_run.sh with a text editor. There are a few paths at the beginning, you need to set them according to your system.
+
+**2. Make an executable.**
 ``` bash
 # in your host machine
 cp docker_run.sh ~/bin # copy it to ~/bin
@@ -37,6 +41,7 @@ rosstart # run the container
 # from another terminal
 rosstart # run another terminal on this container
 ```
+
 
 ## todo
 <!-- add to dockerfile: -->
